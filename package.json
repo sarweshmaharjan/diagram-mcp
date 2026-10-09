@@ -1,0 +1,65 @@
+{
+  "name": "diagram-mcp",
+  "version": "0.4.0",
+  "description": "MCP server: create/update flow & cloud architecture diagrams (AWS/GCP/Azure icons) as PNG",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "tsx test/smoke.ts",
+    "test:loop": "tsx test/loop.test.ts",
+    "live": "tsx test/live.ts",
+    "prepublishOnly": "npm run build",
+    "examples": "tsx scripts/examples.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@dagrejs/dagre": "^3.1.1",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "lucide-static": "^1.53.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "prettier": "^3.9.9",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "bin": {
+    "diagram-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "assets",
+    "licenses"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sarweshmaharjan/diagram-mcp.git"
+  },
+  "homepage": "https://github.com/sarweshmaharjan/diagram-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/sarweshmaharjan/diagram-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "diagram",
+    "architecture",
+    "aws",
+    "gcp",
+    "azure",
+    "kiro",
+    "png"
+  ]
+}

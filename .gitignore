@@ -1,0 +1,5 @@
+node_modules
+dist
+out
+.diagram-mcp/
+.DS_Store
