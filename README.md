@@ -78,13 +78,46 @@ request → interpreter → render → reviewer → fixes → reviewer … → P
            icons, nodes, edges)
 ```
 
-It needs [LM Studio](https://lmstudio.ai) (or any OpenAI-compatible server) with a chat model loaded and the local server running on `http://127.0.0.1:1234`. Without it, `draw_diagram` returns a clear error and every other tool keeps working.
+It needs [LM Studio](https://lmstudio.ai) (or any OpenAI-compatible server) with a chat model loaded and the local server running on `http://127.0.0.1:1234`: see [LM Studio setup](#lm-studio-setup). Without it, `draw_diagram` returns a clear error and every other tool keeps working.
 
 ![Plain-language example](examples/plain-language.png)
 
 > Unedited output for: _"A customer uploads a photo in a web app. The photo goes to an S3 bucket, which triggers a Lambda function. The Lambda calls Amazon Rekognition to detect unsafe content, then saves the result in DynamoDB. If the photo is safe, a second Lambda creates thumbnails and writes them back to S3. If it is unsafe, an SNS topic emails the moderators."_ (local 14B model). Expect a good draft, not a perfect diagram: the reviewer is the same model checking its own work, so refine with `draw_diagram` + `diagram_id` or `update_diagram`.
 
 How the loop stops, and its settings: [docs/architecture.md](docs/architecture.md#review-loop) and [docs/configuration.md](docs/configuration.md#plain-language-mode-llm).
+
+## LM Studio setup
+
+Only `draw_diagram` needs this. Every other tool works without it.
+
+1. **Install LM Studio** from [lmstudio.ai](https://lmstudio.ai) and open it once.
+2. **Download a chat model.** In the app, open the model search (Discover) and download an instruction-tuned model of about 8B parameters or more. This project was tested with a 14B Qwen3-family model (`qwen3.6-14b-a3b`). Smaller models tend to invent components or break the JSON format. Do not pick an embedding model.
+3. **Load the model with enough context.** Prompts include the diagram rules, an icon shortlist and the current spec, so use a **context length of at least 8192** (16384 is safer for big diagrams). LM Studio's default of 4096 is tight. In the app, set it in the model's load settings.
+4. **Start the local server.** In the app, open the Developer tab and switch the server on. It listens on `http://127.0.0.1:1234`.
+5. **Check it works.**
+
+   ```bash
+   curl http://127.0.0.1:1234/v1/models
+   ```
+
+   You should see your chat model in the list. Then ask your MCP client: _"Use draw_diagram: a user calls an API Gateway that invokes a Lambda writing to DynamoDB."_
+
+Menu names vary slightly between LM Studio versions. If you prefer the terminal, the `lms` CLI that ships with LM Studio does the same:
+
+```bash
+lms get qwen3                          # search for a model to download (example term)
+lms load <model-id> -c 16384           # load it with a 16k context
+lms server start                       # start the local server
+lms server status                      # confirm it is running
+lms ps                                 # show loaded models and their context length
+```
+
+Tips:
+
+- The server uses the first loaded model that is not an embedding model. With several loaded, pin one with `DIAGRAM_MCP_LLM_MODEL` (use the id shown by `lms ps`).
+- A diagram takes one interpreter call plus up to five review calls, roughly 10 to 30 seconds each on a laptop. If calls time out, raise `DIAGRAM_MCP_LLM_TIMEOUT_MS`.
+- LM Studio unloads idle models after a while (its TTL setting), so the first call after a break is slower.
+- Other OpenAI-compatible servers (Ollama, llama.cpp server, vLLM) should work too, but only LM Studio is tested. Set `DIAGRAM_MCP_LLM_URL` to the server's `/v1` address. See [docs/configuration.md](docs/configuration.md#plain-language-mode-llm).
 
 ## Where files go
 

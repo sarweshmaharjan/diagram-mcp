@@ -50,7 +50,7 @@ Layout of the folder:
 
 ## Plain-language mode (LLM)
 
-`draw_diagram` talks to an OpenAI-compatible server, LM Studio by default. Set these in the `env` block of the MCP config:
+`draw_diagram` talks to an OpenAI-compatible server, LM Studio by default (step-by-step setup in the [README](../README.md#lm-studio-setup)). Set these in the `env` block of the MCP config:
 
 | Variable                     | Default                          | Meaning                       |
 | ---------------------------- | -------------------------------- | ----------------------------- |
